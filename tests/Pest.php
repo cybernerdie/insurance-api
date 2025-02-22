@@ -12,7 +12,7 @@
 */
 
 pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+ ->use(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class)
     ->in('Feature');
 
 /*
@@ -41,7 +41,13 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function installPassportClient()
 {
-    // ..
+    $client = (new \Laravel\Passport\ClientRepository())->createPersonalAccessClient(
+        null,
+        'Test Client',
+        'http://localhost'
+    );
+
+    return $client;
 }
