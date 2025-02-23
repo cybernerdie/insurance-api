@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Auth;
 
-use App\DTOs\RegisterUserDTO;
+use App\Data\UserData;
 use App\Models\User;
 
 class CreateUserAction
@@ -14,7 +14,7 @@ class CreateUserAction
      * 
      * @return \App\Models\User
      */
-    public function execute(RegisterUserDTO $userData): User
+    public function execute(UserData $userData): User
     {
         return User::create($userData->toArray());
     }

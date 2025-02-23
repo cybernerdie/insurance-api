@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Quotation;
 
-use App\DTOs\GetQuotationDTO;
+use App\Data\GetQuotationData;
 use App\Enums\AgeLoadEnum;
 use Illuminate\Support\Carbon;
 
@@ -12,31 +12,20 @@ class GetQuotationAction
 {
     private const FIXED_RATE = 3; 
 
-    public function execute(GetQuotationDTO $quotationDTO): array
+    public function execute(GetQuotationData $quotationData): array
     {
-        $this->validateAge($quotationDTO->getAge());
-
         $tripLength = $this->calculateTripLength(
-            $quotationDTO->getStartDate(),
-            $quotationDTO->getEndDate()
+            $quotationData->getStartDate(),
+            $quotationData->getEndDate()
         );
 
-        $total = $this->calculateTotal($quotationDTO, $tripLength);
+        $total = $this->calculateTotal($quotationData, $tripLength);
 
         return [
             'total' => number_format($total, 2), 
-            'currency_id' => $quotationDTO->getCurrency(),
+            'currency_id' => $quotationData->getCurrency(),
             'quotation_id' => rand(1, 1000),
         ];
-    }
-
-    private function validateAge(array $ages): void
-    {
-        collect($ages)->each(function ($age) {
-            if (!is_numeric($age) || (int)$age < 18 || (int)$age > 70) {
-                throw new \InvalidArgumentException('Each age must be between 18 and 70.');
-            }
-        });
     }
 
     private function calculateTripLength(string $startDate, string $endDate): int
@@ -45,9 +34,9 @@ class GetQuotationAction
         $end = Carbon::parse($endDate);
 
         if ($start->greaterThan($end)) {
-            throw new \InvalidArgumentException("Start date must be before the end date.");
+            throw new \InvalidArgumentException('Start date must be before end date.');
         }
-
+        
         $tripLength = (int) $start->diffInDays($end) + 1;
 
         if ($tripLength < 1) {
@@ -57,11 +46,11 @@ class GetQuotationAction
         return $tripLength;
     }
 
-    private function calculateTotal(GetQuotationDTO $quotationDTO, int $tripLength): float
+    private function calculateTotal(GetQuotationData $quotationData, int $tripLength): float
     {
         $total = 0;
 
-        collect($quotationDTO->getAge())->each(function ($age) use (&$total, $tripLength) {
+        collect($quotationData->getAge())->each(function ($age) use (&$total, $tripLength) {
             $ageLoad = (float) AgeLoadEnum::fromAge((int)$age)->value;
             $total += self::FIXED_RATE * $ageLoad * $tripLength;
         });

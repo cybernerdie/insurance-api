@@ -4,25 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\DTOs\RegisterUserDTO;
+use App\Data\UserData;
+use Illuminate\Http\JsonResponse;
 use App\Http\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use App\Actions\Auth\CreateUserAction;
-use App\Http\Requests\Auth\RegisterRequest;
-use Illuminate\Http\JsonResponse;
 
 class RegisterController extends Controller
 {
-    public function __invoke(RegisterRequest $request, CreateUserAction $createUserAction): JsonResponse
+    public function __invoke(UserData $userData, CreateUserAction $createUserAction): JsonResponse
     {
-        $userData = new RegisterUserDTO(
-            email: $request->email,
-            password: $request->password,
-            name: $request->name
-        );
-
         /** @var User $user */
         $user = $createUserAction->execute(userData: $userData);
 

@@ -5,26 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Quotation;
 
 use App\Actions\Quotation\GetQuotationAction;
-use App\DTOs\GetQuotationDTO;
+use App\Data\GetQuotationData;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Quotation\GetQuotationRequest;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
 class GetQuotationController extends Controller
 {
-    public function __invoke(GetQuotationRequest $request, GetQuotationAction $getQuotationAction): JsonResponse
+    public function __invoke(GetQuotationData $quotationData, GetQuotationAction $getQuotationAction): JsonResponse
     {
-        $data = $request->validated();
-
-        $quotationDTO = new GetQuotationDTO(
-            age: data_get($data, 'age'),
-            currency_id: data_get($data, 'currency_id'),
-            start_date: data_get($data, 'start_date'),
-            end_date: data_get($data, 'end_date'),
-        );
-
-        $quotation = $getQuotationAction->execute($quotationDTO);
+        $quotation = $getQuotationAction->execute(quotationData: $quotationData);
 
         return ApiResponse::success(
             message: 'Quotation retrieved successfully.',
