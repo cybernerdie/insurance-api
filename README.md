@@ -60,7 +60,6 @@ php artisan serve
 Your API should now be running at `http://127.0.0.1:8000`.
 
 ## 8. Running Tests
-If the project includes tests, run:
 ```sh
 php artisan test
 ```
