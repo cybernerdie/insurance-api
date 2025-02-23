@@ -11,41 +11,34 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use App\Actions\Auth\CreateUserAction;
 use App\Http\Requests\Auth\RegisterRequest;
+use Illuminate\Http\JsonResponse;
 
 class RegisterController extends Controller
 {
-    public function __invoke(RegisterRequest $request, CreateUserAction $createUserAction)
+    public function __invoke(RegisterRequest $request, CreateUserAction $createUserAction): JsonResponse
     {
-        try {
-            $userData = new RegisterUserDTO(
-                email: $request->email,
-                password: $request->password,
-                name: $request->name
-            );
+        $userData = new RegisterUserDTO(
+            email: $request->email,
+            password: $request->password,
+            name: $request->name
+        );
 
-            /** @var User $user */
-            $user = $createUserAction->execute(userData: $userData);
+        /** @var User $user */
+        $user = $createUserAction->execute(userData: $userData);
 
-            Auth::login($user);
+        Auth::login($user);
 
-            $tokenIdentifier = "{$user->ulid}-token";
+        $tokenIdentifier = "{$user->ulid}-token";
 
-            /** @var \Laravel\Passport\PersonalAccessTokenResult $token */
-            $token = $user->createToken($tokenIdentifier);
+        /** @var \Laravel\Passport\PersonalAccessTokenResult $token */
+        $token = $user->createToken($tokenIdentifier);
 
-            return ApiResponse::success(
-                message: 'Registration successful',
-                data: [
-                    'user' => UserResource::make($user)->resolve(),
-                    'token' => $token->accessToken
-                ]
-            );
-        } catch (\Exception $e) {
-            report($e);
-            
-            return ApiResponse::internalServerError(
-                message: 'Registration failed, please try again',
-            );
-        }
+        return ApiResponse::success(
+            message: 'Registration successful',
+            data: [
+                'user' => UserResource::make($user)->resolve(),
+                'token' => $token->accessToken
+            ]
+        );
     }
 }

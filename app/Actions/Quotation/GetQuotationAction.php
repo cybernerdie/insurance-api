@@ -26,7 +26,7 @@ class GetQuotationAction
         return [
             'total' => number_format($total, 2), 
             'currency_id' => $quotationDTO->getCurrency(),
-            'quotation_id' => 1,
+            'quotation_id' => rand(1, 1000),
         ];
     }
 

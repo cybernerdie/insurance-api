@@ -60,29 +60,6 @@ it('fails to register a user with invalid data', function () {
         ]);
 });
 
-it('handles registration failure', function () {
-    $this->mock(CreateUserAction::class, function ($mock) {
-        $mock->shouldReceive('execute')
-            ->once()
-            ->with(Mockery::any())
-            ->andThrow(new \Exception('Registration error'));
-    });
-
-    $data = [
-        'name' => 'Jane Doe',
-        'email' => 'jane@example.com',
-        'password' => 'password123',
-        'password_confirmation' => 'password123',
-    ];
-
-    $response = postJson($this->route, $data);
-
-    $response->assertStatus(500)
-        ->assertJson([
-            'message' => 'Registration failed, please try again',
-        ]);
-});
-
 it('ensures email uniqueness during registration', function () {
     User::factory()->create([
         'email' => 'john@example.com',

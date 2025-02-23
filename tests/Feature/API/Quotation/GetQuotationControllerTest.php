@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use App\Actions\Quotation\GetQuotationAction;
-use function Pest\Laravel\{actingAs, postJson, assertDatabaseHas};
+use function Pest\Laravel\{actingAs, postJson};
 
 beforeEach(function () {    
     $this->user = User::factory()->create();
@@ -32,37 +31,11 @@ it('retrieves a quotation successfully', function () {
                 'currency_id',
                 'quotation_id',
             ],
-        ])
-        ->assertJson([
+        ])->assertJsonFragment([
             'message' => 'Quotation retrieved successfully.',
-            'data' => [
-                'total' => '117.00',
-                'currency_id' => 'USD',
-                'quotation_id' => 1,
-            ],
-        ]);
-});
-
-it('returns an error if the quotation retrieval fails', function () {
-    $data = [
-        'age' => '30',
-        'currency_id' => 'USD',
-        'start_date' => '2025-01-01',
-        'end_date' => '2025-01-10',
-    ];
-
-    $this->mock(GetQuotationAction::class, function ($mock) {
-        $mock->shouldReceive('execute')
-            ->once()
-            ->andThrow(new \Exception('Quotation retrieval error'));
-    });
-
-    $response = postJson($this->route, $data);
-
-    $response->assertStatus(500)
-        ->assertJson([
-            'message' => 'Failed to retrieve quotation. Please try again later.',
-        ]);
+            'total' => '117.00',
+            'currency_id' => 'USD',
+        ])->assertJsonPath('data.quotation_id', fn ($id) => is_int($id));
 });
 
 it('fails to retrieve a quotation with invalid data', function () {

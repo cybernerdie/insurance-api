@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);    
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Quotation;
 
@@ -9,11 +9,11 @@ use App\DTOs\GetQuotationDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Quotation\GetQuotationRequest;
 use App\Http\Responses\ApiResponse;
-use Exception;
+use Illuminate\Http\JsonResponse;
 
 class GetQuotationController extends Controller
 {
-    public function __invoke(GetQuotationRequest $request, GetQuotationAction $getQuotationAction)
+    public function __invoke(GetQuotationRequest $request, GetQuotationAction $getQuotationAction): JsonResponse
     {
         $data = $request->validated();
 
@@ -24,19 +24,11 @@ class GetQuotationController extends Controller
             end_date: data_get($data, 'end_date'),
         );
 
-        try {
-            $quotation = $getQuotationAction->execute($quotationDTO);
-            
-            return ApiResponse::success(
-                message: 'Quotation retrieved successfully.',
-                data: $quotation
-            );
-        } catch (Exception $e) {
-            report($e); 
+        $quotation = $getQuotationAction->execute($quotationDTO);
 
-            return ApiResponse::internalServerError(
-                message: 'Failed to retrieve quotation. Please try again later.'
-            );
-        }
+        return ApiResponse::success(
+            message: 'Quotation retrieved successfully.',
+            data: $quotation
+        );
     }
 }

@@ -18,7 +18,6 @@ it('calculates the correct quotation total', function () {
     expect($result)->toMatchArray([
         'total' => '117.00',
         'currency_id' => $dto->getCurrency(),
-        'quotation_id' => 1,
     ]);
 });
 
