@@ -57,7 +57,7 @@ This will generate Passport keys for API authentication
 ```sh
 php artisan serve
 ```
-Your API should now be running at `http://127.0.0.1:8000`.
+The app should now be running at `http://127.0.0.1:8000`.
 
 ## 8. Running Tests
 ```sh
